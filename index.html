@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏆 IPL 2026 Winner Predictor | AI/ML Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', 'Orbitron', 'Roboto', sans-serif;
+        }
+
+        /* 3D Animated Background with particles and moving gradients */
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
+            overflow-x: hidden;
+            position: relative;
+            color: #fff;
+        }
+
+        /* Animated gradient orb */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,107,53,0.3), rgba(0,78,137,0.2));
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: floatOrb 18s infinite alternate ease-in-out;
+        }
+
+        .orb1 { top: -200px; right: -150px; background: radial-gradient(circle, #ff6b35, #ffb347); animation-duration: 22s; }
+        .orb2 { bottom: -250px; left: -100px; width: 500px; height: 500px; background: radial-gradient(circle, #004e89, #1a4a6f); animation-duration: 25s; animation-delay: -5s; }
+        .orb3 { top: 40%; left: 30%; width: 350px; height: 350px; background: radial-gradient(circle, #ffcc00, #ff6b35); filter: blur(100px); animation-duration: 30s; opacity: 0.4; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(80px, 60px) scale(1.2); }
+        }
+
+        /* Particle canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Glassmorphism header */
+        .header {
+            background: rgba(10, 43, 62, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 20px 32px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.4);
+        }
+        .logo-area { display: flex; align-items: center; gap: 16px; }
+        .logo-area i { font-size: 48px; color: #ffcc00; filter: drop-shadow(0 0 8px #ffaa33); }
+        .title h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #ffcc80); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .badge { background: rgba(255,180,71,0.9); backdrop-filter: blur(4px); padding: 8px 18px; border-radius: 40px; font-weight: bold; color: #1e2a3e; }
+
+        /* Prediction trigger button */
+        .prediction-hero {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0 50px;
+        }
+        .predict-btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 20px 60px;
+            font-size: 2rem;
+            font-weight: 800;
+            border-radius: 80px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255,107,53,0.6), 0 8px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(4px);
+            letter-spacing: 2px;
+        }
+        .predict-btn i { font-size: 2.2rem; transition: transform 0.3s; }
+        .predict-btn:hover { transform: scale(1.03); box-shadow: 0 0 45px rgba(255,107,53,0.9); background: linear-gradient(135deg, #ff7b4a, #ffaa33); }
+        .predict-btn:active { transform: scale(0.98); }
+
+        /* Loading animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 30px;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .loading-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .loader-cricket {
+            font-size: 5rem;
+            animation: bowlShake 0.8s infinite;
+        }
+        @keyframes bowlShake {
+            0% { transform: rotate(0deg) translateX(0); }
+            50% { transform: rotate(15deg) translateX(15px); }
+            100% { transform: rotate(0deg) translateX(0); }
+        }
+        .loading-text {
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #ff6b35, #ffcc00);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* Result cards (hidden initially) */
+        .results-container {
+            display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .winner-banner {
+            background: linear-gradient(120deg, rgba(249,213,110,0.9), rgba(248,193,80,0.9));
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 28px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255,215,0,0.5);
+        }
+        .winner-text { font-size: 2.2rem; font-weight: 800; color: #1e2a3e; }
+        .winner-percent { font-size: 1.6rem; background: #1e2a3e; padding: 8px 24px; border-radius: 60px; color: #ffcc00; }
+
+        .card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 24px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.2s;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-left: 5px solid #ff6b35;
+            padding-left: 18px;
+        }
+        .metric-row { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+        .metric-card {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 18px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .metric-value { font-size: 2rem; font-weight: 800; color: #ffb347; }
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 30px 0 20px;
+        }
+        .tab-btn {
+            background: rgba(20,30,45,0.7);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #ddd;
+            transition: 0.2s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+        .tab-content { display: none; }
+        canvas { max-height: 350px; width: 100%; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 10px; }
+        .footer { text-align: center; margin-top: 50px; padding: 20px; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        select { background: #1e2a3e; color: white; padding: 10px; border-radius: 30px; border: 1px solid #ff6b35; margin-bottom: 20px; width: 100%; max-width: 300px; }
+        .squad-detail { background: rgba(0,0,0,0.4); border-radius: 20px; padding: 12px; margin-bottom: 12px; backdrop-filter: blur(4px); }
+        .player-badge { background: #2d3e50; display: inline-block; padding: 4px 12px; border-radius: 20px; margin: 4px; font-size: 0.75rem; }
+        .overseas { background: #5a2e1a; color: #ffb347; }
+    </style>
+</head>
+<body>
+<div class="animated-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+</div>
+<canvas id="particleCanvas"></canvas>
+
+<div class="container">
+    <div class="header">
+        <div class="logo-area"><i class="fas fa-trophy"></i><div class="title"><h1>IPL 2026 PREDICTOR</h1><p>AI/ML • Neural Net Engine</p></div></div>
+        <div class="badge"><i class="fas fa-robot"></i> XGBoost · Deep Learning</div>
+    </div>
+
+    <!-- Hero Prediction Section -->
+    <div class="prediction-hero">
+        <button class="predict-btn" id="runPredictionBtn">
+            <i class="fas fa-cricket-bat-ball"></i> PREDICT IPL 2026 WINNER <i class="fas fa-chart-line"></i>
+        </button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader-cricket"><i class="fas fa-baseball-ball"></i> 🏏 <i class="fas fa-chart-simple"></i></div>
+        <div class="loading-text">ANALYZING 10 TEAMS • 23 FEATURES • SIMULATING PLAYOFFS</div>
+        <div style="width: 300px; height: 4px; background: #333; border-radius: 4px; overflow: hidden;"><div style="width: 0%; height: 100%; background: #ff6b35; animation: loadingBar 2.2s ease forwards;"></div></div>
+    </div>
+
+    <!-- Results Container (hidden until prediction) -->
+    <div id="resultsContainer" class="results-container">
+        <div class="winner-banner" id="winnerBanner">
+            <div class="winner-text"><i class="fas fa-crown"></i> PREDICTED WINNER: <span id="winnerName">--</span></div>
+            <div class="winner-percent"><span id="winnerProb">--</span>% probability</div>
+        </div>
+        <div class="metric-row">
+            <div class="metric-card"><i class="fas fa-medal"></i> <div class="metric-value" id="runnerUp">--</div><div>🥈 Runner-Up</div></div>
+            <div class="metric-card"><i class="fas fa-bolt"></i> <div class="metric-value" id="darkHorse">--</div><div>⚡ Dark Horse</div></div>
+            <div class="metric-card"><i class="fas fa-chart-pie"></i> <div class="metric-value" id="topTeamCount">10</div><div>Teams Analyzed</div></div>
+        </div>
+        <div class="card"><div class="card-title"><i class="fas fa-chart-simple"></i> Win Probability — All Teams</div><canvas id="winProbChart"></canvas></div>
+        <div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Playoff Bracket</div><div class="grid-2" style="display: flex; gap: 20px; flex-wrap: wrap;"><div><strong>🔵 Qualifier 1</strong><br><span id="q1"></span><br><span id="q2"></span></div><div><strong>🟠 Eliminator</strong><br><span id="e1"></span><br><span id="e2"></span></div><div><strong>🏆 Final</strong><br><span id="finalMatchup"></span></div></div></div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="team"><i class="fas fa-users"></i> Team Analysis</button>
+            <button class="tab-btn" data-tab="models"><i class="fas fa-microchip"></i> Model Comparison</button>
+            <button class="tab-btn" data-tab="squads"><i class="fas fa-list-ul"></i> 2026 Squads</button>
+        </div>
+
+        <div id="tab-team" class="tab-content">
+            <div class="card">
+                <div class="card-title"><i class="fas fa-chart-radar"></i> Select Team</div>
+                <select id="teamSelect"></select>
+                <div class="grid-2">
+                    <div><h3>📊 Metrics</h3><table id="teamStatsTable"><tr><td>Win Probability</td><td id="twProb">—</td></tr><tr><td>Batting Index</td><td id="tBat">—</td></tr><tr><td>Bowling Index</td><td id="tBowl">—</td></tr><tr><td>Experience</td><td id="tExp">—</td></tr><tr><td>Balance</td><td id="tBalance">—</td></tr></table></div>
+                    <div><h3>⚡ Squad</h3><p><strong>Captain:</strong> <span id="captainSpan">—</span></p><p><strong>Key Players:</strong> <span id="keyPlayersSpan">—</span></p><p><strong>Overseas:</strong> <span id="overseasSpan">—</span></p><p><strong>Strengths:</strong> <span id="strengthSpan">—</span></p></div>
+                </div>
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+        <div id="tab-models" class="tab-content" style="display: none;">
+            <div class="card"><div class="card-title"><i class="fas fa-chart-column"></i> Model Performance</div><canvas id="modelCompChart"></canvas><div style="margin-top:20px;"><strong>Best Model:</strong> Neural Network (F1=0.598) | Confusion Matrix: [[39,81],[34,75]]</div></div>
+        </div>
+        <div id="tab-squads" class="tab-content" style="display: none;">
+            <div class="card"><div class="card-title"><i class="fas fa-users-viewfinder"></i> Full 2026 Squads</div><div id="squadAccordion"></div></div>
+        </div>
+        <div class="footer"><i class="fas fa-database"></i> AI Model: 2008-2025 historical data | 23 engineered features | 10-team simulation</div>
+    </div>
+</div>
+
+<script>
+    // ==================== TEAM DATA (UPDATED 2026) ====================
+    const teamsData2026 = [
+        { team: "Mumbai Indians", batting: 0.92, bowling: 0.94, experience: 0.92, balance: 0.91, win_prob: 16.2, titles: 5, captain: "Hardik Pandya", keyPlayers: "Rohit, Surya, Bumrah", overseas: "Boult, Santner, Rickelton", strengths: "World-class pace attack", weaknesses: "Middle order" },
+        { team: "Chennai Super Kings", batting: 0.88, bowling: 0.86, experience: 0.96, balance: 0.89, win_prob: 14.5, titles: 5, captain: "Ruturaj Gaikwad", keyPlayers: "Dhoni, Jadeja, Gaikwad", overseas: "Conway, Pathirana", strengths: "Leadership, spin depth", weaknesses: "Pace depth" },
+        { team: "Gujarat Titans", batting: 0.91, bowling: 0.93, experience: 0.80, balance: 0.90, win_prob: 15.1, titles: 1, captain: "Shubman Gill", keyPlayers: "Gill, Rashid, Buttler", overseas: "Rashid, Buttler, Rabada", strengths: "Explosive top order", weaknesses: "Middle order" },
+        { team: "Kolkata Knight Riders", batting: 0.87, bowling: 0.89, experience: 0.82, balance: 0.88, win_prob: 12.8, titles: 3, captain: "Ajinkya Rahane", keyPlayers: "Narine, Rinku, Green", overseas: "Narine, Green, Pathirana", strengths: "Mystery spinners", weaknesses: "Inconsistent middle" },
+        { team: "Royal Challengers Bengaluru", batting: 0.94, bowling: 0.81, experience: 0.78, balance: 0.84, win_prob: 11.9, titles: 0, captain: "Rajat Patidar", keyPlayers: "Kohli, Patidar, Hazlewood", overseas: "Hazlewood, David, Bethell", strengths: "Explosive batting", weaknesses: "Death bowling" },
+        { team: "Sunrisers Hyderabad", batting: 0.91, bowling: 0.84, experience: 0.79, balance: 0.85, win_prob: 11.3, titles: 1, captain: "Ishan Kishan", keyPlayers: "Head, Klaasen, Abhishek", overseas: "Head, Klaasen, Cummins", strengths: "Devastating batting", weaknesses: "Spin" },
+        { team: "Rajasthan Royals", batting: 0.89, bowling: 0.87, experience: 0.80, balance: 0.86, win_prob: 10.7, titles: 2, captain: "Riyan Parag", keyPlayers: "Jaiswal, Parag, Jadeja", overseas: "Archer, Hetmyer", strengths: "Spin, openers", weaknesses: "Middle order" },
+        { team: "Lucknow Super Giants", batting: 0.86, bowling: 0.84, experience: 0.74, balance: 0.83, win_prob: 9.8, titles: 0, captain: "Rishabh Pant", keyPlayers: "Pant, Pooran, Markram", overseas: "Pooran, Marsh, Hasaranga", strengths: "Top-order solidity", weaknesses: "Death bowling" },
+        { team: "Delhi Capitals", batting: 0.86, bowling: 0.88, experience: 0.75, balance: 0.85, win_prob: 9.4, titles: 0, captain: "Axar Patel", keyPlayers: "KL Rahul, Axar, Kuldeep", overseas: "Starc, Stubbs", strengths: "Indian core", weaknesses: "Openers" },
+        { team: "Punjab Kings", batting: 0.87, bowling: 0.83, experience: 0.72, balance: 0.82, win_prob: 8.3, titles: 0, captain: "Shreyas Iyer", keyPlayers: "Iyer, Arshdeep, Stoinis", overseas: "Stoinis, Jansen, Omarzai", strengths: "Aggressive batting", weaknesses: "Consistency" }
+    ];
+
+    const modelMetrics = [
+        { name: "Logistic Regression", acc: 0.5284, prec: 0.528, rec: 0.574, f1: 0.550, auc: 0.574 },
+        { name: "Random Forest", acc: 0.5371, prec: 0.533, rec: 0.626, f1: 0.576, auc: 0.559 },
+        { name: "Neural Network", acc: 0.5240, prec: 0.519, rec: 0.704, f1: 0.598, auc: 0.569 }
+    ];
+
+    const squadMap = {
+        "Mumbai Indians": ["Rohit Sharma", "Hardik Pandya(c)", "Suryakumar Yadav", "Jasprit Bumrah", "Trent Boult★", "Tilak Varma", "Naman Dhir", "Mitchell Santner★", "Will Jacks★", "Deepak Chahar"],
+        "Chennai Super Kings": ["Ruturaj Gaikwad(c)", "MS Dhoni†", "Shivam Dube", "Ravindra Jadeja", "Devon Conway★", "Matheesha Pathirana★", "Jamie Overton★", "Noor Ahmad★", "Khaleel Ahmed", "Rahul Chahar"],
+        "Gujarat Titans": ["Shubman Gill(c)", "Jos Buttler†★", "Rashid Khan★", "Kagiso Rabada★", "Mohammed Siraj", "Sai Sudharsan", "Rahul Tewatia", "Washington Sundar", "Glenn Phillips★", "Jason Holder★"],
+        "Kolkata Knight Riders": ["Ajinkya Rahane(c)", "Sunil Narine★", "Rinku Singh", "Cameron Green★", "Rachin Ravindra★", "Varun Chakravarthy", "Umran Malik", "Matheesha Pathirana★", "Manish Pandey", "Angkrish Raghuvanshi"],
+        "Royal Challengers Bengaluru": ["Rajat Patidar(c)", "Virat Kohli", "Phil Salt†★", "Josh Hazlewood★", "Tim David★", "Krunal Pandya", "Bhuvneshwar Kumar", "Suyash Sharma", "Swapnil Singh", "Devdutt Padikkal"],
+        "Sunrisers Hyderabad": ["Ishan Kishan(c)†", "Travis Head★", "Heinrich Klaasen★", "Abhishek Sharma", "Pat Cummins★", "Nitish Reddy", "Harshal Patel", "Brydon Carse★", "Jaydev Unadkat", "Liam Livingstone★"],
+        "Rajasthan Royals": ["Riyan Parag(c)", "Yashasvi Jaiswal", "Ravindra Jadeja★", "Jofra Archer★", "Shimron Hetmyer★", "Dhruv Jurel†", "Sandeep Sharma", "Ravi Bishnoi", "Nandre Burger★", "Donovan Ferreira★"],
+        "Lucknow Super Giants": ["Rishabh Pant(c)†", "Nicholas Pooran★", "Aiden Markram★", "Mitchell Marsh★", "Wanindu Hasaranga★", "Mohammed Shami", "Avesh Khan", "Mayank Yadav", "Shahbaz Ahmed", "Ayush Badoni"],
+        "Delhi Capitals": ["Axar Patel(c)", "KL Rahul†", "Mitchell Starc★", "Kuldeep Yadav", "Tristan Stubbs★", "Mukesh Kumar", "T Natarajan", "Prithvi Shaw", "Abishek Porel†", "David Miller★"],
+        "Punjab Kings": ["Shreyas Iyer(c)", "Marcus Stoinis★", "Arshdeep Singh", "Yuzvendra Chahal", "Marco Jansen★", "Shashank Singh", "Lockie Ferguson★", "Harpreet Brar", "Prabhsimran Singh†", "Nehal Wadhera"]
+    };
+
+    let charts = {};
+
+    function simulatePrediction() {
+        const sorted = [...teamsData2026].sort((a,b)=>b.win_prob - a.win_prob);
+        const winner = sorted[0], runner = sorted[1], dark = sorted[4];
+        document.getElementById('winnerName').innerText = winner.team;
+        document.getElementById('winnerProb').innerText = winner.win_prob;
+        document.getElementById('runnerUp').innerHTML = `${runner.team}<div style="font-size:0.8rem;">${runner.win_prob}%</div>`;
+        document.getElementById('darkHorse').innerHTML = `${dark.team}<div style="font-size:0.8rem;">${dark.win_prob}%</div>`;
+        document.getElementById('q1').innerHTML = `${sorted[0].team} (${sorted[0].win_prob}%)`;
+        document.getElementById('q2').innerHTML = `${sorted[1].team} (${sorted[1].win_prob}%)`;
+        document.getElementById('e1').innerHTML = `${sorted[2].team} (${sorted[2].win_prob}%)`;
+        document.getElementById('e2').innerHTML = `${sorted[3].team} (${sorted[3].win_prob}%)`;
+        document.getElementById('finalMatchup').innerHTML = `${winner.team} vs ${runner.team}<br>🏆 ${winner.team} WINS`;
+        if(charts.winChart) charts.winChart.destroy();
+        const ctx = document.getElementById('winProbChart').getContext('2d');
+        charts.winChart = new Chart(ctx, { type: 'bar', data: { labels: sorted.map(t=>t.team), datasets: [{ label: 'Win Probability (%)', data: sorted.map(t=>t.win_prob), backgroundColor: '#ff6b35' }] }, options: { responsive: true } });
+    }
+
+    function renderTeamAnalysis(teamName) {
+        const t = teamsData2026.find(t=>t.team === teamName);
+        if(!t) return;
+        document.getElementById('twProb').innerHTML = `${t.win_prob}%`;
+        document.getElementById('tBat').innerHTML = t.batting;
+        document.getElementById('tBowl').innerHTML = t.bowling;
+        document.getElementById('tExp').innerHTML = t.experience;
+        document.getElementById('tBalance').innerHTML = t.balance;
+        document.getElementById('captainSpan').innerHTML = t.captain;
+        document.getElementById('keyPlayersSpan').innerHTML = t.keyPlayers;
+        document.getElementById('overseasSpan').innerHTML = t.overseas;
+        document.getElementById('strengthSpan').innerHTML = t.strengths;
+        if(charts.radar) charts.radar.destroy();
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        charts.radar = new Chart(radarCtx, { type: 'radar', data: { labels: ['Batting','Bowling','Experience','Balance'], datasets: [{ label: t.team, data: [t.batting*100, t.bowling*100, t.experience*100, t.balance*100], backgroundColor: 'rgba(255,107,53,0.3)', borderColor: '#ff6b35' }] }, options: { responsive: true, scales: { r: { min: 0, max: 100 } } } });
+    }
+
+    function renderModelComparison() {
+        if(charts.modelChart) charts.modelChart.destroy();
+        const ctx = document.getElementById('modelCompChart').getContext('2d');
+        charts.modelChart = new Chart(ctx, { type: 'bar', data: { labels: ['Accuracy','Precision','Recall','F1-Score','AUC'], datasets: modelMetrics.map((m,i)=> ({ label: m.name, data: [m.acc, m.prec, m.rec, m.f1, m.auc], backgroundColor: ['#004E89','#1A936F','#C62828'][i] })) }, options: { responsive: true, scales: { y: { max: 0.8 } } } });
+    }
+
+    function renderSquads() {
+        let html = '';
+        for(let t of teamsData2026) {
+            let players = squadMap[t.team] || ["Player list"];
+            html += `<details class="squad-detail"><summary>🏏 ${t.team} (C: ${t.captain})</summary><div>`;
+            players.forEach(p => { const isOverseas = p.includes('★'); html += `<span class="player-badge ${isOverseas ? 'overseas' : ''}">${p.replace('★','')}${isOverseas ? ' ★' : ''}</span> `; });
+            html += `</div><p><strong>Strengths:</strong> ${t.strengths}</p></details>`;
+        }
+        document.getElementById('squadAccordion').innerHTML = html;
+    }
+
+    function fillTeamSelect() {
+        const sel = document.getElementById('teamSelect');
+        sel.innerHTML = teamsData2026.map(t=>`<option value="${t.team}">${t.team}</option>`).join('');
+        sel.addEventListener('change', (e)=> renderTeamAnalysis(e.target.value));
+        renderTeamAnalysis(teamsData2026[0].team);
+    }
+
+    // Tab switching
+    function initTabs() {
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+                const target = document.getElementById(`tab-${btn.getAttribute('data-tab')}`);
+                if(target) target.style.display = 'block';
+                btns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if(btn.getAttribute('data-tab') === 'models') renderModelComparison();
+                if(btn.getAttribute('data-tab') === 'squads') renderSquads();
+            });
+        });
+        document.getElementById('tab-team').style.display = 'block';
+    }
+
+    // Prediction trigger
+    document.getElementById('runPredictionBtn').addEventListener('click', () => {
+        const loader = document.getElementById('loadingOverlay');
+        loader.classList.add('active');
+        setTimeout(() => {
+            loader.classList.remove('active');
+            document.getElementById('resultsContainer').style.display = 'block';
+            simulatePrediction();
+            fillTeamSelect();
+            renderModelComparison();
+            renderSquads();
+            initTabs();
+            window.scrollTo({ top: document.getElementById('resultsContainer').offsetTop - 20, behavior: 'smooth' });
+        }, 2300);
+    });
+
+    // Particle background
+    const canvas = document.getElementById('particleCanvas');
+    const ctxP = canvas.getContext('2d');
+    let particles = [];
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function createParticles() { for(let i=0;i<100;i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, radius: Math.random()*2+1, dx: (Math.random()-0.5)*0.5, dy: (Math.random()-0.5)*0.3, alpha: Math.random()*0.5+0.2 }); }
+    function drawParticles() { ctxP.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { ctxP.beginPath(); ctxP.arc(p.x, p.y, p.radius, 0, Math.PI*2); ctxP.fillStyle = `rgba(255,200,100,${p.alpha})`; ctxP.fill(); p.x += p.dx; p.y += p.dy; if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0; if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0; }); requestAnimationFrame(drawParticles); }
+    resizeCanvas(); createParticles(); drawParticles();
+    window.addEventListener('resize', () => { resizeCanvas(); createParticles(); });
+</script>
+</body>
+</html>

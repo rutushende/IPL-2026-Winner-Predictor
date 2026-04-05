@@ -1,0 +1,11 @@
+team,strength_score,batting_index,bowling_index,experience_score,form_score,toss_advantage,team_balance,titles,composite_score,win_probability
+Chennai Super Kings,0.7704,0.85,0.82,1.6663,0.6111,0.529,0.88,5,0.925655,13.15
+Mumbai Indians,0.6584,0.88,0.92,1.7022,0.5277,0.4806,0.9,5,0.9227,13.11
+Kolkata Knight Riders,0.6168,0.86,0.87,1.2199,0.5,0.4766,0.89,3,0.822185,11.68
+Rajasthan Royals,0.4336,0.89,0.85,0.9448,0.4444,0.4672,0.87,2,0.72956,10.37
+Gujarat Titans,0.4744,0.87,0.88,0.5753,0.5556,0.5,0.88,1,0.6984549999999999,9.92
+Sunrisers Hyderabad,0.4072,0.93,0.81,0.5822,0.5,0.5082,0.85,1,0.6721300000000001,9.55
+Lucknow Super Giants,0.5264,0.85,0.8,0.0,0.6666,0.7714,0.81,0,0.6092599999999999,8.66
+Royal Challengers Bengaluru,0.4256,0.91,0.8,0.0,0.4722,0.5643,0.83,0,0.57862,8.22
+Delhi Capitals,0.4368,0.84,0.83,0.0,0.4444,0.5217,0.82,0,0.56964,8.09
+Punjab Kings,0.3024,0.82,0.82,0.0,0.2778,0.4765,0.79,0,0.5103800000000001,7.25

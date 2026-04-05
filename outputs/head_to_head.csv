@@ -1,0 +1,46 @@
+team_a,team_b,total_matches,team_a_wins,team_b_wins
+Mumbai Indians,Chennai Super Kings,36,14,22
+Mumbai Indians,Royal Challengers Bengaluru,36,22,14
+Mumbai Indians,Kolkata Knight Riders,36,18,18
+Mumbai Indians,Rajasthan Royals,36,22,14
+Mumbai Indians,Sunrisers Hyderabad,36,18,18
+Mumbai Indians,Delhi Capitals,36,18,18
+Mumbai Indians,Punjab Kings,36,17,19
+Mumbai Indians,Gujarat Titans,8,3,5
+Mumbai Indians,Lucknow Super Giants,8,4,4
+Chennai Super Kings,Royal Challengers Bengaluru,36,15,21
+Chennai Super Kings,Kolkata Knight Riders,36,20,16
+Chennai Super Kings,Rajasthan Royals,36,19,17
+Chennai Super Kings,Sunrisers Hyderabad,36,21,15
+Chennai Super Kings,Delhi Capitals,36,18,18
+Chennai Super Kings,Punjab Kings,36,21,15
+Chennai Super Kings,Gujarat Titans,8,5,3
+Chennai Super Kings,Lucknow Super Giants,8,4,4
+Royal Challengers Bengaluru,Kolkata Knight Riders,36,16,20
+Royal Challengers Bengaluru,Rajasthan Royals,36,24,12
+Royal Challengers Bengaluru,Sunrisers Hyderabad,36,18,18
+Royal Challengers Bengaluru,Delhi Capitals,36,21,15
+Royal Challengers Bengaluru,Punjab Kings,36,20,16
+Royal Challengers Bengaluru,Gujarat Titans,8,3,5
+Royal Challengers Bengaluru,Lucknow Super Giants,8,3,5
+Kolkata Knight Riders,Rajasthan Royals,36,16,20
+Kolkata Knight Riders,Sunrisers Hyderabad,36,18,18
+Kolkata Knight Riders,Delhi Capitals,36,16,20
+Kolkata Knight Riders,Punjab Kings,36,17,19
+Kolkata Knight Riders,Gujarat Titans,8,3,5
+Kolkata Knight Riders,Lucknow Super Giants,8,2,6
+Rajasthan Royals,Sunrisers Hyderabad,36,13,23
+Rajasthan Royals,Delhi Capitals,36,16,20
+Rajasthan Royals,Punjab Kings,36,21,15
+Rajasthan Royals,Gujarat Titans,8,3,5
+Rajasthan Royals,Lucknow Super Giants,8,5,3
+Sunrisers Hyderabad,Delhi Capitals,36,14,22
+Sunrisers Hyderabad,Punjab Kings,36,23,13
+Sunrisers Hyderabad,Gujarat Titans,8,3,5
+Sunrisers Hyderabad,Lucknow Super Giants,8,1,7
+Delhi Capitals,Punjab Kings,36,24,12
+Delhi Capitals,Gujarat Titans,8,7,1
+Delhi Capitals,Lucknow Super Giants,8,1,7
+Punjab Kings,Gujarat Titans,8,3,5
+Punjab Kings,Lucknow Super Giants,8,2,6
+Gujarat Titans,Lucknow Super Giants,8,3,5
